@@ -216,3 +216,124 @@ sequenceDiagram
 - Scale `order-service`/`product-service` by CPU + latency SLO
 - Scale Kafka consumers (`notification`, `analytics`, `indexer`) by partition lag
 - Scale Redis/Kafka/MySQL using cluster/replica topology defined in SRD
+
+---
+
+## 6. ERD (Data Model Relationships)
+
+### Logical ERD
+
+```mermaid
+erDiagram
+    USER {
+        bigint id PK
+        string username
+        string email
+        string phone
+        string role
+        string tier
+        datetime created_at
+    }
+
+    PRODUCT {
+        bigint id PK
+        string name
+        string sku
+        decimal price
+        int stock
+        bigint category_id FK
+        int version
+    }
+
+    CATEGORY {
+        bigint id PK
+        string name
+        bigint parent_id FK
+    }
+
+    ORDERS {
+        bigint id PK
+        bigint user_id FK
+        string status
+        decimal total
+        datetime created_at
+    }
+
+    ORDER_ITEM {
+        bigint id PK
+        bigint order_id FK
+        bigint product_id FK
+        int quantity
+        decimal price
+    }
+
+    FLASHSALE_CAMPAIGN {
+        bigint id PK
+        bigint product_id FK
+        datetime start_at
+        datetime end_at
+        int stock
+        decimal price_promo
+        int max_per_user
+    }
+
+    FLASHSALE_PURCHASE {
+        bigint id PK
+        bigint campaign_id FK
+        bigint user_id FK
+        bigint order_id FK
+        datetime created_at
+    }
+
+    NOTIFICATION_CAMPAIGN {
+        bigint id PK
+        string name
+        string segment
+        string channels
+        string template
+        datetime scheduled_at
+        string status
+    }
+
+    NOTIFICATION_LOG {
+        bigint id PK
+        bigint campaign_id FK
+        bigint user_id FK
+        string channel
+        string status
+        datetime sent_at
+        string error
+    }
+
+    OUTBOX_EVENT {
+        bigint id PK
+        string aggregate_type
+        string aggregate_id
+        string event_type
+        json payload
+        string status
+        datetime created_at
+    }
+
+    USER ||--o{ ORDERS : places
+    ORDERS ||--|{ ORDER_ITEM : contains
+    PRODUCT ||--o{ ORDER_ITEM : purchased_in
+
+    CATEGORY ||--o{ PRODUCT : groups
+    CATEGORY ||--o{ CATEGORY : parent_of
+
+    PRODUCT ||--o{ FLASHSALE_CAMPAIGN : promoted_in
+    FLASHSALE_CAMPAIGN ||--o{ FLASHSALE_PURCHASE : has
+    USER ||--o{ FLASHSALE_PURCHASE : participates
+    ORDERS ||--o| FLASHSALE_PURCHASE : created_from
+
+    NOTIFICATION_CAMPAIGN ||--o{ NOTIFICATION_LOG : generates
+    USER ||--o{ NOTIFICATION_LOG : receives
+```
+
+### Notes
+
+- `OUTBOX_EVENT` is written in the same transaction as business entities (for example `ORDERS`) and then exported by CDC to Kafka.
+- `CATEGORY.parent_id` models hierarchical categories (self-reference).
+- `FLASHSALE_PURCHASE.order_id` may be nullable until async order creation finishes.
+- Physical deployment uses per-service databases; ERD above is a logical domain view for cross-service understanding.
