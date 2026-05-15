@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: userserv-route
+          uri: lb://userserv
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - "RewritePath=/api/users/?(?<segment>.*),/v1/users/${segment}"
+        - id: productserv-route
+          uri: lb://productserv
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - "RewritePath=/api/products/?(?<segment>.*),/v1/products/${segment}"
+
+server:
+  port: 8282
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8762/eureka
