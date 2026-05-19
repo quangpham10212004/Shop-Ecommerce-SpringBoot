@@ -30,6 +30,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public OrderResponse getById(@PathVariable Long id) {
         return orderService.getById(id);
     }

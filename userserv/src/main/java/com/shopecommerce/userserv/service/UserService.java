@@ -6,14 +6,13 @@ import com.shopecommerce.userserv.exception.ResourceNotFoundException;
 import com.shopecommerce.userserv.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-	
+
     private final UserRepository userRepository;
-    
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -24,6 +23,7 @@ public class UserService {
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .role(request.getRole())
+                .department(request.getDepartment())
                 .createdAt(LocalDateTime.now())
                 .build();
         return userRepository.save(user);
@@ -31,6 +31,10 @@ public class UserService {
 
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    public List<User> search(String name, String role, String department) {
+        return userRepository.search(normalize(name), normalize(role), normalize(department));
     }
 
     public User getById(Long id) {
@@ -44,6 +48,7 @@ public class UserService {
         existing.setEmail(request.getEmail());
         existing.setPhone(request.getPhone());
         existing.setRole(request.getRole());
+        existing.setDepartment(request.getDepartment());
         return userRepository.save(existing);
     }
 
@@ -52,5 +57,10 @@ public class UserService {
         userRepository.delete(existing);
     }
 
-  
+    private String normalize(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
+    }
 }

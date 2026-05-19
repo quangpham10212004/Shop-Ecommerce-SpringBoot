@@ -5,6 +5,8 @@ import com.aiecommerce.productserv.entity.Product;
 import com.aiecommerce.productserv.service.ProductService;
 import jakarta.validation.Valid;
 import java.util.List;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/products")
 public class ProductController {
-
+	
     private final ProductService productService;
 
     public ProductController(ProductService productService) {

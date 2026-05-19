@@ -21,4 +21,7 @@ public class UserRequest {
 
     @NotBlank(message = "role is required")
     private String role;
+
+    @NotBlank(message = "department is required")
+    private String department;
 }

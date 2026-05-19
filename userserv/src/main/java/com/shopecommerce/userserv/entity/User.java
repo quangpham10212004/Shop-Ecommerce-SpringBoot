@@ -39,5 +39,8 @@ public class User {
     private String role;
 
     @Column(nullable = false)
+    private String department;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 }
