@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Shop-Ecommerce-SpringBoot.iml" filepath="$PROJECT_DIR$/Shop-Ecommerce-SpringBoot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/productserv/productserv.iml" filepath="$PROJECT_DIR$/productserv/productserv.iml" />
-      <module fileurl="file://$PROJECT_DIR$/userserv/userserv.iml" filepath="$PROJECT_DIR$/userserv/userserv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product-service/product-service.iml" filepath="$PROJECT_DIR$/product-service/product-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-service/user-service.iml" filepath="$PROJECT_DIR$/user-service/user-service.iml" />
     </modules>
   </component>
 </project>
