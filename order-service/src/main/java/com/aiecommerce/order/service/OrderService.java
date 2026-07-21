@@ -5,10 +5,10 @@ import com.aiecommerce.order.dto.CreateOrderRequest;
 import com.aiecommerce.order.dto.OrderResponse;
 import com.aiecommerce.order.dto.UpdateOrderRequest;
 
+
 import java.util.List;
 
 public interface OrderService {
-
     BaseResponse<OrderResponse> create(CreateOrderRequest request);
 
     BaseResponse<List<OrderResponse>> getAll();

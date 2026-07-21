@@ -34,7 +34,9 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ApplicationException("Category not found"));
         Product product = productMapper.fromRequest(request);
         product.setCategory(category);
+        product.setIsDeleted(false);
         productRepository.save(product);
+
         return BaseResponse.success(productMapper.toResponse(product), "Create product successfully");
     }
 
