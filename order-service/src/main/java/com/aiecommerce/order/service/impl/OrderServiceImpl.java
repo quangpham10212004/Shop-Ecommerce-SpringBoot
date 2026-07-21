@@ -6,6 +6,7 @@ import com.aiecommerce.order.dto.BaseResponse;
 import com.aiecommerce.order.dto.CreateOrderRequest;
 import com.aiecommerce.order.dto.OrderItemRequest;
 import com.aiecommerce.order.dto.OrderResponse;
+import com.aiecommerce.order.dto.UpdateOrderRequest;
 import com.aiecommerce.order.entity.Order;
 import com.aiecommerce.order.entity.OrderItem;
 import com.aiecommerce.order.entity.OrderStatus;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -57,10 +59,39 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    public BaseResponse<List<OrderResponse>> getAll() {
+        List<OrderResponse> responses = orderRepository.findAll()
+                .stream()
+                .map(orderMapper::toResponse)
+                .toList();
+        return BaseResponse.success(responses, "Get all orders successfully");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public BaseResponse<OrderResponse> getById(String id) {
         Order order = orderRepository.findWithItemsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order with id " + id + " not found"));
         return BaseResponse.success(orderMapper.toResponse(order));
+    }
+
+    @Override
+    @Transactional
+    public BaseResponse<OrderResponse> update(String id, UpdateOrderRequest request) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order with id " + id + " not found"));
+        order.setStatus(request.getStatus());
+        orderRepository.save(order);
+        return BaseResponse.success(orderMapper.toResponse(order), "Update order successfully");
+    }
+
+    @Override
+    @Transactional
+    public BaseResponse<Void> delete(String id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order with id " + id + " not found"));
+        orderRepository.delete(order);
+        return BaseResponse.success(null, "Delete order successfully");
     }
 
     private void validateStock(ProductDto product, Integer quantity) {
