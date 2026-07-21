@@ -2,17 +2,17 @@ spring:
   application:
     name: order-service
   datasource:
-    url: "jdbc:mysql://localhost:3306/orderserv_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+    url: "jdbc:mariadb://localhost:3306/order_service_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
     username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ngocquang04
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MariaDBDialect
 
 server:
   port: 8080
@@ -30,6 +30,7 @@ eureka:
   instance:
     prefer-ip-address: true
   client:
+    enabled: false
     fetch-registry: true
     register-with-eureka: true
     service-url:

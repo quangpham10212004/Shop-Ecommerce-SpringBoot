@@ -3,30 +3,21 @@ package com.aiecommerce.order.dto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class CreateOrderRequest {
 
     @NotNull(message = "userId is required")
-    private Long userId;
+    private String userId;
 
     @Valid
     @NotEmpty(message = "items must not be empty")
     private List<OrderItemRequest> items;
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public List<OrderItemRequest> getItems() {
-        return items;
-    }
-
-    public void setItems(List<OrderItemRequest> items) {
-        this.items = items;
-    }
 }
