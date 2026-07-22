@@ -32,4 +32,19 @@ public class ProductClientImpl implements ProductClient {
         return response.data();
 
     }
+
+    @Override
+    public ProductDto deductStock(String productId, Integer quantity) {
+        BaseResponse<ProductDto> response = webClientBuilder.build()
+                .patch()
+                .uri("http://localhost:8888/v1/products/{productId}/stock?quantity={quantity}",
+                        productId, quantity)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<BaseResponse<ProductDto>>() {})
+                .block();
+        if (response == null) {
+            throw new RuntimeException("Failed to deduct stock for product: " + productId);
+        }
+        return response.data();
+    }
 }

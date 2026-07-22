@@ -77,6 +77,11 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(totalAmount);
         order.setIsDeleted(false);
         Order savedOrder = orderRepository.save(order);
+
+        for (OrderItemRequest itemRequest : request.getItems()) {
+            productClient.deductStock(itemRequest.getProductId(), itemRequest.getQuantity());
+        }
+
         return BaseResponse.success(orderMapper.toResponse(savedOrder), "Order created successfully");
     }
 

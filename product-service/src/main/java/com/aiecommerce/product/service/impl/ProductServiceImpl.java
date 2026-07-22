@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -72,6 +73,8 @@ public class ProductServiceImpl implements ProductService {
         return BaseResponse.success(productMapper.toResponse(product), "Update product successfully");
     }
 
+
+
     @Override
     @Transactional
     public BaseResponse<Void> delete(String id) {
@@ -87,4 +90,19 @@ public class ProductServiceImpl implements ProductService {
                 .stream().map(productMapper::toResponse).toList();
         return BaseResponse.success(list, "Search product successfully");
     }
+
+    @Override
+    public BaseResponse<ReturnProductResponse> deductStock(String id, int quantity) {
+        Optional<Product> product = productRepository.findById(id);
+        if(product.isEmpty()){
+            throw new ResourceNotFoundException("Product with id " + id + " not found");
+        }
+        int stock = product.get().getStock();
+        int updatedStock = stock - quantity;
+        product.get().setStock(updatedStock);
+        productRepository.save(product.get());
+        return BaseResponse.success(productMapper.toResponse(product.get()),"Deduct stock successfully");
+    }
+
+
 }

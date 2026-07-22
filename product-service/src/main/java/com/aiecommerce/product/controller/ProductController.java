@@ -7,6 +7,7 @@ import com.aiecommerce.product.dto.request.UpdateProductRequest;
 import com.aiecommerce.product.dto.response.ReturnProductResponse;
 import com.aiecommerce.product.service.ProductService;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,13 @@ public class ProductController {
             @PathVariable String id,
             @Valid @RequestBody UpdateProductRequest request) {
         return ResponseEntity.ok(productService.update(id, request));
+    }
+
+    @PatchMapping("/{id}/stock") //url: http://localhost:8888/v1/products/stock/1
+    public ResponseEntity<BaseResponse<ReturnProductResponse>> deductStock (
+            @PathVariable String id,
+            @RequestParam int quantity) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.deductStock(id, quantity));
     }
 
     @DeleteMapping("/{id}")
