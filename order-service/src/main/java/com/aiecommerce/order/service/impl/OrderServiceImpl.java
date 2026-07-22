@@ -1,12 +1,10 @@
 package com.aiecommerce.order.service.impl;
 
-import com.aiecommerce.order.client.ProductClient;
-import com.aiecommerce.order.client.ProductDto;
 import com.aiecommerce.order.dto.BaseResponse;
-import com.aiecommerce.order.dto.CreateOrderRequest;
-import com.aiecommerce.order.dto.OrderItemRequest;
-import com.aiecommerce.order.dto.OrderResponse;
-import com.aiecommerce.order.dto.UpdateOrderRequest;
+import com.aiecommerce.order.dto.request.CreateOrderRequest;
+import com.aiecommerce.order.dto.request.OrderItemRequest;
+import com.aiecommerce.order.dto.response.OrderResponse;
+import com.aiecommerce.order.dto.request.UpdateOrderRequest;
 import com.aiecommerce.order.entity.Order;
 import com.aiecommerce.order.entity.OrderItem;
 import com.aiecommerce.order.entity.OrderStatus;
@@ -19,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -29,11 +25,7 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final ProductClient productClient;
     private final OrderMapper orderMapper;
-
-
-
 
     @Override
     @Transactional
@@ -41,23 +33,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.fromRequest(request);
         order.setStatus(OrderStatus.CREATED);
 
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (OrderItemRequest itemRequest : request.getItems()) {
-            ProductDto product = productClient.getById(itemRequest.getProductId());
-            validateStock(product, itemRequest.getQuantity());
 
-            OrderItem item = orderMapper.fromItemRequest(itemRequest);
-            item.setUnitPrice(product.getPrice());
-            BigDecimal lineTotal = product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
-            item.setLineTotal(lineTotal);
-
-            order.addItem(item);
-            totalAmount = totalAmount.add(lineTotal);
-        }
-
-        order.setTotalAmount(totalAmount);
-        Order savedOrder = orderRepository.save(order);
-        return BaseResponse.success(orderMapper.toResponse(savedOrder), "Order created successfully");
+        return BaseResponse.success(orderMapper.toResponse(null), "Order created successfully");
     }
 
     @Override
@@ -97,13 +74,13 @@ public class OrderServiceImpl implements OrderService {
         return BaseResponse.success(null, "Delete order successfully");
     }
 
-    private void validateStock(ProductDto product, Integer quantity) {
-        if (product.getStock() == null) {
-            return;
-        }
-        if (quantity > product.getStock()) {
-            throw new BadRequestException(
-                    "Insufficient stock for product " + product.getId() + ", available: " + product.getStock());
-        }
-    }
+//    private void validateStock(ProductDto product, Integer quantity) {
+//        if (product.getStock() == null) {
+//            return;
+//        }
+//        if (quantity > product.getStock()) {
+//            throw new BadRequestException(
+//                    "Insufficient stock for product " + product.getId() + ", available: " + product.getStock());
+//        }
+//    }
 }

@@ -1,9 +1,9 @@
 package com.aiecommerce.order.service;
 
 import com.aiecommerce.order.dto.BaseResponse;
-import com.aiecommerce.order.dto.CreateOrderRequest;
-import com.aiecommerce.order.dto.OrderResponse;
-import com.aiecommerce.order.dto.UpdateOrderRequest;
+import com.aiecommerce.order.dto.request.CreateOrderRequest;
+import com.aiecommerce.order.dto.response.OrderResponse;
+import com.aiecommerce.order.dto.request.UpdateOrderRequest;
 
 
 import java.util.List;

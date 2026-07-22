@@ -1,4 +1,4 @@
-package com.aiecommerce.order.dto;
+package com.aiecommerce.order.dto.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

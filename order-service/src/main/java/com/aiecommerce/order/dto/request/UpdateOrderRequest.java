@@ -1,4 +1,4 @@
-package com.aiecommerce.order.dto;
+package com.aiecommerce.order.dto.request;
 
 import com.aiecommerce.order.entity.OrderStatus;
 import jakarta.validation.constraints.NotNull;

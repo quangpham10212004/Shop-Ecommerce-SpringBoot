@@ -1,4 +1,4 @@
-package com.aiecommerce.order.dto;
+package com.aiecommerce.order.dto.response;
 
 import com.aiecommerce.order.entity.OrderStatus;
 import lombok.AllArgsConstructor;

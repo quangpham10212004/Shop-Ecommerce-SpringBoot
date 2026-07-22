@@ -1,4 +1,4 @@
-package com.aiecommerce.order.dto;
+package com.aiecommerce.order.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,9 +1,9 @@
 package com.aiecommerce.order.controller;
 
 import com.aiecommerce.order.dto.BaseResponse;
-import com.aiecommerce.order.dto.CreateOrderRequest;
-import com.aiecommerce.order.dto.OrderResponse;
-import com.aiecommerce.order.dto.UpdateOrderRequest;
+import com.aiecommerce.order.dto.request.CreateOrderRequest;
+import com.aiecommerce.order.dto.response.OrderResponse;
+import com.aiecommerce.order.dto.request.UpdateOrderRequest;
 import com.aiecommerce.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

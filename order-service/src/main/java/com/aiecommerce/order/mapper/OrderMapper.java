@@ -1,9 +1,9 @@
 package com.aiecommerce.order.mapper;
 
-import com.aiecommerce.order.dto.CreateOrderRequest;
-import com.aiecommerce.order.dto.OrderItemRequest;
-import com.aiecommerce.order.dto.OrderItemResponse;
-import com.aiecommerce.order.dto.OrderResponse;
+import com.aiecommerce.order.dto.request.CreateOrderRequest;
+import com.aiecommerce.order.dto.request.OrderItemRequest;
+import com.aiecommerce.order.dto.response.OrderItemResponse;
+import com.aiecommerce.order.dto.response.OrderResponse;
 import com.aiecommerce.order.entity.Order;
 import com.aiecommerce.order.entity.OrderItem;
 import org.mapstruct.Mapper;
