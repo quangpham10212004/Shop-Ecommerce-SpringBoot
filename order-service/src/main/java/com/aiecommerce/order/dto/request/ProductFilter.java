@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductFilter {
-    List<String> ids;
+    List<String> productIds;
 }

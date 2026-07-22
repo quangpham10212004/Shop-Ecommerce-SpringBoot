@@ -15,6 +15,12 @@ public interface OrderMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "totalAmount", ignore = true)
+    @Mapping(target = "items", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedAt", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
     Order fromRequest(CreateOrderRequest request);
 
     @Mapping(target = "status", expression = "java(order.getStatus().name())")
@@ -25,6 +31,11 @@ public interface OrderMapper {
     @Mapping(target = "order", ignore = true)
     @Mapping(target = "unitPrice", ignore = true)
     @Mapping(target = "lineTotal", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "lastModifiedAt", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
     OrderItem fromItemRequest(OrderItemRequest request);
 
     // OrderItem: Entity → Response

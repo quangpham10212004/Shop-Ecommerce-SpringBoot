@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
 
         // 2. Gọi product-service lấy thông tin sản phẩm một lần
-        List<ProductDto> products = productClient.getProductByIds(new ProductFilter(productIds));
+        List<ProductDto> products = productClient.getProductByIds(new ProductFilter(productIds)); // productIds khớp với field trong product-service
 
         // 3. Build map productId -> ProductDto để lookup O(1)
         Map<String, ProductDto> productMap = products.stream()
@@ -75,6 +75,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setTotalAmount(totalAmount);
+        order.setIsDeleted(false);
         Order savedOrder = orderRepository.save(order);
         return BaseResponse.success(orderMapper.toResponse(savedOrder), "Order created successfully");
     }
@@ -118,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
 
     private void validateStock(ProductDto product, Integer quantity) {
         if (product.getStock() == null) {
-            return;
+            throw new BadRequestException("Stock is not available for product " + product.getId());
         }
         if (quantity > product.getStock()) {
             throw new BadRequestException(
