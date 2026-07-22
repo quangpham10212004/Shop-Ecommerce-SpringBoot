@@ -36,4 +36,5 @@ public record BaseResponse<T>(
                 .message(message)
                 .build();
     }
+
 }

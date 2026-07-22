@@ -19,3 +19,8 @@ public interface OrderService {
 
     BaseResponse<Void> delete(String id);
 }
+
+
+/* service A -> serivice :
+* RestTemplate(Blocking), WebClient(ho tro ca Blocking va non blocking), feign client (Blocking)
+* */

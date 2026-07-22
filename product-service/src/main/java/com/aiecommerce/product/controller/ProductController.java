@@ -2,6 +2,7 @@ package com.aiecommerce.product.controller;
 
 import com.aiecommerce.product.dto.BaseResponse;
 import com.aiecommerce.product.dto.request.CreateProductRequest;
+import com.aiecommerce.product.dto.request.ProductFilter;
 import com.aiecommerce.product.dto.request.UpdateProductRequest;
 import com.aiecommerce.product.dto.response.ReturnProductResponse;
 import com.aiecommerce.product.service.ProductService;
@@ -48,5 +49,14 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> delete(@PathVariable String id) {
         return ResponseEntity.ok(productService.delete(id));
+    }
+
+    @PostMapping("/search") // http://localhost:8888/v1/products/search
+    public ResponseEntity<BaseResponse<List<ReturnProductResponse>>> search(@RequestBody ProductFilter filter){
+        List<ReturnProductResponse> list = productService.search(filter).data();
+        if(list.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(BaseResponse.success(list));
     }
 }

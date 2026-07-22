@@ -2,6 +2,7 @@ package com.aiecommerce.product.service.impl;
 
 import com.aiecommerce.product.dto.BaseResponse;
 import com.aiecommerce.product.dto.request.CreateProductRequest;
+import com.aiecommerce.product.dto.request.ProductFilter;
 import com.aiecommerce.product.dto.request.UpdateProductRequest;
 import com.aiecommerce.product.dto.response.ReturnProductResponse;
 import com.aiecommerce.product.entity.Product;
@@ -78,5 +79,12 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " not found"));
         productRepository.delete(product);
         return BaseResponse.success(null, "Delete product successfully");
+    }
+
+    @Override
+    public BaseResponse<List<ReturnProductResponse>> search(ProductFilter filter) {
+        List<ReturnProductResponse> list = productRepository.findByIdIsIn(filter.getProductIds())
+                .stream().map(productMapper::toResponse).toList();
+        return BaseResponse.success(list, "Search product successfully");
     }
 }

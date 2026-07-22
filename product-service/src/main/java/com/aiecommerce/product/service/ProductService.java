@@ -2,6 +2,7 @@ package com.aiecommerce.product.service;
 
 import com.aiecommerce.product.dto.BaseResponse;
 import com.aiecommerce.product.dto.request.CreateProductRequest;
+import com.aiecommerce.product.dto.request.ProductFilter;
 import com.aiecommerce.product.dto.request.UpdateProductRequest;
 import com.aiecommerce.product.dto.response.ReturnProductResponse;
 
@@ -17,4 +18,6 @@ public interface ProductService {
     BaseResponse<ReturnProductResponse> update(String id, UpdateProductRequest request);
     
     BaseResponse<Void> delete(String id);
+
+    BaseResponse<List<ReturnProductResponse>> search(ProductFilter filter);
 }
