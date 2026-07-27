@@ -47,10 +47,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.update(id, request));
     }
 
-    @PatchMapping("/{id}/stock") //url: http://localhost:8888/v1/products/stock/1
+    @PatchMapping("/{id}/stock") //url: http://localhost:8888/v1/products/stock
     public ResponseEntity<BaseResponse<ReturnProductResponse>> deductStock (
             @PathVariable String id,
             @RequestParam int quantity) {
+
         return ResponseEntity.status(HttpStatus.OK).body(productService.deductStock(id, quantity));
     }
 
