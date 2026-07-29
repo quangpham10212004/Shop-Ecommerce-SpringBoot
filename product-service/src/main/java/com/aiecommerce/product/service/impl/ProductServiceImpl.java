@@ -99,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
     public BaseResponse<Void> lockStock(LockProductRequest req) {
         List<LockProductItem> items = req.getItems();
         var productIdQuantityMap = items.stream().collect(Collectors.toMap(LockProductItem::getId, LockProductItem::getQuantity));
-        List<Product > products = productRepository.findByIdIsIn(new ArrayList<>(productIdQuantityMap.keySet()));
+        List<Product > products = productRepository.findByIdIsInForUpdate(new ArrayList<>(productIdQuantityMap.keySet()));
         products.forEach(product -> {
             int quantity = productIdQuantityMap.get(product.getId());
             int stock = product.getStock();

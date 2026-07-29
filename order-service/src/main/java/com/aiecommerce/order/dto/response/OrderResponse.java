@@ -19,5 +19,5 @@ public class OrderResponse {
     private String userId;
     private String status;
     private BigDecimal totalAmount;
-    private List<OrderItemResponse> items;
+//    private List<OrderItemResponse> orderItems;
 }

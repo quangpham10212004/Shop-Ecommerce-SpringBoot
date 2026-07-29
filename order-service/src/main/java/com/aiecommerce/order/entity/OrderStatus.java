@@ -2,5 +2,10 @@ package com.aiecommerce.order.entity;
 
 public enum OrderStatus {
     CREATED,
-    CANCELLED
+    CONFIRMED,
+    PROCEEDING,
+    SHIPPED,
+    DELIVERED,
+    CANCELLED,
+    REFUNDED
 }

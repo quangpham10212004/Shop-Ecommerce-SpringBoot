@@ -18,6 +18,8 @@ public interface OrderService {
     BaseResponse<OrderResponse> update(String id, UpdateOrderRequest request);
 
     BaseResponse<Void> delete(String id);
+
+    BaseResponse<Void> changeStatus(String orderId, String status);
 }
 
 

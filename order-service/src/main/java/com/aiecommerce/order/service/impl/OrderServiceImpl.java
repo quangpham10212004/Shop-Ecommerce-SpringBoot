@@ -11,9 +11,11 @@ import com.aiecommerce.order.dto.response.ProductDto;
 import com.aiecommerce.order.entity.Order;
 import com.aiecommerce.order.entity.OrderItem;
 import com.aiecommerce.order.entity.OrderStatus;
+import com.aiecommerce.order.event.OrderCreatedEvent;
 import com.aiecommerce.order.exception.BadRequestException;
 import com.aiecommerce.order.exception.ResourceNotFoundException;
 import com.aiecommerce.order.mapper.OrderMapper;
+import com.aiecommerce.order.repository.OrderItemRepository;
 import com.aiecommerce.order.repository.OrderRepository;
 import com.aiecommerce.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,6 +37,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
     private final OrderMapper orderMapper;
     private final ProductClient productClient;
     private final KafkaTemplate<String, Object> kafkaTemplate; // bean ho tro pub msg len kafka
@@ -59,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CREATED);
 
         // 5. Xử lý từng item
+        List<OrderItem> items = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (OrderItemRequest itemRequest : request.getItems()) {
             ProductDto product = productMap.get(itemRequest.getProductId());
@@ -71,16 +76,22 @@ public class OrderServiceImpl implements OrderService {
             item.setUnitPrice(product.getPrice());
             BigDecimal lineTotal = product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
             item.setLineTotal(lineTotal);
-
-            order.addItem(item);
+            items.add(item);
             totalAmount = totalAmount.add(lineTotal);
+
         }
 
         order.setTotalAmount(totalAmount);
         order.setIsDeleted(false);
         Order savedOrder = orderRepository.save(order);
-        kafkaTemplate.send("order-created", orderMapper.toResponse(savedOrder));
-        log.info("Order created: {}", savedOrder);
+        items.forEach(item -> item.setOrder(savedOrder));
+        var orderItems = orderItemRepository.saveAll(items);
+
+        OrderCreatedEvent event = orderMapper.toEvent(savedOrder);
+        event.setOrderItems(orderItems.stream().map(orderMapper::toItemResponse).toList());
+        kafkaTemplate.send("order-created",event);
+
+        log.info("Order created: {}", event);
 
         return BaseResponse.success(orderMapper.toResponse(savedOrder), "Order created successfully");
     }
@@ -122,6 +133,16 @@ public class OrderServiceImpl implements OrderService {
         return BaseResponse.success(null, "Delete order successfully");
     }
 
+    @Override
+    @Transactional
+    public BaseResponse<Void> changeStatus(String orderId, String status) {
+        Order existdOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order with id " + orderId + " not found"));
+        existdOrder.setStatus(OrderStatus.valueOf(status));
+        orderRepository.save(existdOrder);
+        return BaseResponse.success(null, "Change status successfully");
+    }
+
     private void validateStock(ProductDto product, Integer quantity) {
         if (product.getStock() == null) {
             throw new BadRequestException("Stock is not available for product " + product.getId());
@@ -131,4 +152,6 @@ public class OrderServiceImpl implements OrderService {
                     "Insufficient stock for product " + product.getId() + ", available: " + product.getStock());
         }
     }
+
+
 }

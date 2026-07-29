@@ -6,6 +6,7 @@ import com.aiecommerce.order.dto.response.OrderItemResponse;
 import com.aiecommerce.order.dto.response.OrderResponse;
 import com.aiecommerce.order.entity.Order;
 import com.aiecommerce.order.entity.OrderItem;
+import com.aiecommerce.order.event.OrderCreatedEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -37,7 +38,7 @@ public interface OrderMapper {
     @Mapping(target = "lastModifiedAt", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
     OrderItem fromItemRequest(OrderItemRequest request);
-
+    OrderCreatedEvent toEvent(Order order);
     // OrderItem: Entity → Response
     OrderItemResponse toItemResponse(OrderItem item);
 }
