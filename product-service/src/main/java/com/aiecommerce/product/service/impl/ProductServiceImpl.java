@@ -107,8 +107,8 @@ public class ProductServiceImpl implements ProductService {
         String lockKey = "lock:product:" + String.join(",", sortedIds);
         RLock lock = redissonClient.getLock(lockKey);
         try {
-            if(lock.tryLock(10,5, TimeUnit.MILLISECONDS)){
-                Thread.sleep(4000);
+            if(lock.tryLock(10,5, TimeUnit.SECONDS)){
+//                Thread.sleep(4000);
                 log.info("Lock acquired for {}", lockKey);
                 var productIdQuantityMap = items.stream().collect(Collectors.toMap(LockProductItem::getId, LockProductItem::getQuantity));
                 List<Product> products = productRepository.findByIdIsIn(new ArrayList<>(productIdQuantityMap.keySet()));
