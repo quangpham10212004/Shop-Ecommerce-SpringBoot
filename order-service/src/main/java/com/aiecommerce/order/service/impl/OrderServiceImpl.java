@@ -18,6 +18,7 @@ import com.aiecommerce.order.repository.OrderRepository;
 import com.aiecommerce.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ProductClient productClient;
+    private final KafkaTemplate<String, Object> kafkaTemplate; // bean ho tro pub msg len kafka
 
     @Override
     @Transactional
@@ -77,8 +79,8 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(totalAmount);
         order.setIsDeleted(false);
         Order savedOrder = orderRepository.save(order);
-
-
+        kafkaTemplate.send("order-created", orderMapper.toResponse(savedOrder));
+        log.info("Order created: {}", savedOrder);
 
         return BaseResponse.success(orderMapper.toResponse(savedOrder), "Order created successfully");
     }

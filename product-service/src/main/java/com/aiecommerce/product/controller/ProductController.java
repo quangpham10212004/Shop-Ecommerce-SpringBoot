@@ -2,6 +2,7 @@ package com.aiecommerce.product.controller;
 
 import com.aiecommerce.product.dto.BaseResponse;
 import com.aiecommerce.product.dto.request.CreateProductRequest;
+import com.aiecommerce.product.dto.request.LockProductRequest;
 import com.aiecommerce.product.dto.request.ProductFilter;
 import com.aiecommerce.product.dto.request.UpdateProductRequest;
 import com.aiecommerce.product.dto.response.ReturnProductResponse;
@@ -30,6 +31,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(request));
     }
 
+
+    @PostMapping("/lock")
+    public ResponseEntity<BaseResponse<Boolean>> lockStock(@RequestBody LockProductRequest req){
+        productService.lockStock(req);
+        return ResponseEntity.ok(BaseResponse.success(true,"Successfully lock stock"));
+    }
+
     @GetMapping
     public ResponseEntity<BaseResponse<List<ReturnProductResponse>>> getAll() {
         return ResponseEntity.ok(productService.getAll());
@@ -47,13 +55,6 @@ public class ProductController {
         return ResponseEntity.ok(productService.update(id, request));
     }
 
-    @PatchMapping("/{id}/stock") //url: http://localhost:8888/v1/products/stock
-    public ResponseEntity<BaseResponse<ReturnProductResponse>> deductStock (
-            @PathVariable String id,
-            @RequestParam int quantity) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(productService.deductStock(id, quantity));
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> delete(@PathVariable String id) {

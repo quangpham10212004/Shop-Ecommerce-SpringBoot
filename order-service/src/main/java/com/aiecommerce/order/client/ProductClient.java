@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ProductClient {
     List<ProductDto> getProductByIds (ProductFilter productFilter);
-    ProductDto deductStock(String productId, Integer quantity);
+
 }

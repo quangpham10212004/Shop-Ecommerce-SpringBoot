@@ -1,9 +1,7 @@
 package com.aiecommerce.product.service.impl;
 
 import com.aiecommerce.product.dto.BaseResponse;
-import com.aiecommerce.product.dto.request.CreateProductRequest;
-import com.aiecommerce.product.dto.request.ProductFilter;
-import com.aiecommerce.product.dto.request.UpdateProductRequest;
+import com.aiecommerce.product.dto.request.*;
 import com.aiecommerce.product.dto.response.ReturnProductResponse;
 import com.aiecommerce.product.entity.Product;
 import com.aiecommerce.product.exception.ApplicationException;
@@ -17,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -91,17 +92,22 @@ public class ProductServiceImpl implements ProductService {
         return BaseResponse.success(list, "Search product successfully");
     }
 
+
+
     @Override
-    public BaseResponse<ReturnProductResponse> deductStock(String id, int quantity) {
-        Optional<Product> product = productRepository.findById(id);
-        if(product.isEmpty()){
-            throw new ResourceNotFoundException("Product with id " + id + " not found");
-        }
-        int stock = product.get().getStock();
-        int updatedStock = stock - quantity;
-        product.get().setStock(updatedStock);
-        productRepository.save(product.get());
-        return BaseResponse.success(productMapper.toResponse(product.get()),"Deduct stock successfully");
+    @Transactional
+    public BaseResponse<Void> lockStock(LockProductRequest req) {
+        List<LockProductItem> items = req.getItems();
+        var productIdQuantityMap = items.stream().collect(Collectors.toMap(LockProductItem::getId, LockProductItem::getQuantity));
+        List<Product > products = productRepository.findByIdIsIn(new ArrayList<>(productIdQuantityMap.keySet()));
+        products.forEach(product -> {
+            int quantity = productIdQuantityMap.get(product.getId());
+            int stock = product.getStock();
+            int updatedStock = stock - quantity;
+            product.setStock(updatedStock);
+        });
+        productRepository.saveAll(products);
+        return BaseResponse.success(null, "Lock stock successfully");
     }
 
 

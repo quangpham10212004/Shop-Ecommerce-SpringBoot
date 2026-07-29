@@ -10,6 +10,16 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: product-service
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      properties:
+#        spring.json.trusted.packages: "*"
+#        spring.json.use.type.headers: false
 
 server:
   port: 8888

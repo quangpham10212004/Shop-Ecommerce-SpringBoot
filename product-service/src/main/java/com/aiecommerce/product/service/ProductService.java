@@ -2,6 +2,7 @@ package com.aiecommerce.product.service;
 
 import com.aiecommerce.product.dto.BaseResponse;
 import com.aiecommerce.product.dto.request.CreateProductRequest;
+import com.aiecommerce.product.dto.request.LockProductRequest;
 import com.aiecommerce.product.dto.request.ProductFilter;
 import com.aiecommerce.product.dto.request.UpdateProductRequest;
 import com.aiecommerce.product.dto.response.ReturnProductResponse;
@@ -21,5 +22,6 @@ public interface ProductService {
     BaseResponse<Void> delete(String id);
 
     BaseResponse<List<ReturnProductResponse>> search(ProductFilter filter);
-    BaseResponse<ReturnProductResponse> deductStock(String id, int quantity);
+
+    BaseResponse<Void> lockStock(LockProductRequest req);
 }
