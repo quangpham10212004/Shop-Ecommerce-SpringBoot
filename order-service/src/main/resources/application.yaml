@@ -21,7 +21,7 @@ spring:
       properties:
         spring.json.add.type.headers: false
         delivery.timeout.ms: 3000
-        request.timeout.ms: 15000
+        request.timeout.ms: 1500
         linger.ms: 0 # ?
 
     consumer:

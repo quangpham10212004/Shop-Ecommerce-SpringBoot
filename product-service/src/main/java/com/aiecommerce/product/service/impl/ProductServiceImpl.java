@@ -12,12 +12,15 @@ import com.aiecommerce.product.repository.ProductRepository;
 import com.aiecommerce.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final RedissonClient redissonClient;
 
     @Override
     @Transactional
@@ -98,15 +102,34 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public BaseResponse<Void> lockStock(LockProductRequest req) {
         List<LockProductItem> items = req.getItems();
-        var productIdQuantityMap = items.stream().collect(Collectors.toMap(LockProductItem::getId, LockProductItem::getQuantity));
-        List<Product > products = productRepository.findByIdIsInForUpdate(new ArrayList<>(productIdQuantityMap.keySet()));
-        products.forEach(product -> {
-            int quantity = productIdQuantityMap.get(product.getId());
-            int stock = product.getStock();
-            int updatedStock = stock - quantity;
-            product.setStock(updatedStock);
-        });
-        productRepository.saveAll(products);
+
+        List<String> sortedIds = items.stream().map(LockProductItem::getId).sorted().toList();
+        String lockKey = "lock:product:" + String.join(",", sortedIds);
+        RLock lock = redissonClient.getLock(lockKey);
+        try {
+            if(lock.tryLock(10,5, TimeUnit.MILLISECONDS)){
+                Thread.sleep(4000);
+                log.info("Lock acquired for {}", lockKey);
+                var productIdQuantityMap = items.stream().collect(Collectors.toMap(LockProductItem::getId, LockProductItem::getQuantity));
+                List<Product> products = productRepository.findByIdIsIn(new ArrayList<>(productIdQuantityMap.keySet()));
+                if(products.isEmpty()){
+                    throw new ResourceNotFoundException("Product not found");
+                }
+                // khau tru ton kho
+                products.forEach(product -> {
+                    int quantity = productIdQuantityMap.get(product.getId());
+                    int stock = product.getStock();
+                    int updatedStock = stock - quantity;
+                    product.setStock(updatedStock);
+                });
+                productRepository.saveAll(products);
+                lock.unlock();
+            } else
+                throw new ApplicationException("Lock failed");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         return BaseResponse.success(null, "Lock stock successfully");
     }
 
