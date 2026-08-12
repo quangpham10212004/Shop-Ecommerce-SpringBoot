@@ -6,24 +6,20 @@ spring:
       server:
         webflux:
           routes:
-            - id: user-service-route
-              uri: lb://user-service
-              predicates:
-                - Path=/api/users/**
-              filters:
-                - RewritePath=/api/users/?(?<segment>.*), /v1/users/${segment}
+#            - id: user-service-route
+#              uri: lb://user-service
+#              predicates:
+#                - Path=/api/users/**
+#              filters:
+#                - RewritePath=/api/users/?(?<segment>.*), /v1/users/${segment}
             - id: product-service-route
               uri: lb://product-service
               predicates:
-                - Path=/api/products/**
-              filters:
-                - RewritePath=/api/products/?(?<segment>.*), /v1/products/${segment}
+                - Path=/v1/products/**
             - id: order-service-route
               uri: lb://order-service
               predicates:
-                - Path=/api/orders/**
-              filters:
-                - RewritePath=/api/orders/?(?<segment>.*), /v1/orders/${segment}
+                - Path=/v1/orders/**
 
 server:
   port: 8282
