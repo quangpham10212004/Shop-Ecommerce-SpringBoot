@@ -104,12 +104,17 @@ public class ProductServiceImpl implements ProductService {
         List<LockProductItem> items = req.getItems();
 
         List<String> sortedIds = items.stream().map(LockProductItem::getId).sorted().toList();
-        String lockKey = "lock:product:" + String.join(",", sortedIds);
-        RLock lock = redissonClient.getLock(lockKey);
+        List<RLock> locks = new ArrayList<>();
         try {
-            if(lock.tryLock(10,5, TimeUnit.SECONDS)){
-//                Thread.sleep(4000);
-                log.info("Lock acquired for {}", lockKey);
+            for(String productId : sortedIds){
+                RLock lock = redissonClient.getLock("product-lock-" + productId);
+                if(!lock.tryLock(10,5, TimeUnit.SECONDS)){
+                    throw new ApplicationException("Lock failed");
+
+                }
+                locks.add(lock);
+                log.info("Lock acquired for {}", productId);
+            }
                 var productIdQuantityMap = items.stream().collect(Collectors.toMap(LockProductItem::getId, LockProductItem::getQuantity));
                 List<Product> products = productRepository.findByIdIsIn(new ArrayList<>(productIdQuantityMap.keySet()));
                 if(products.isEmpty()){
@@ -123,11 +128,16 @@ public class ProductServiceImpl implements ProductService {
                     product.setStock(updatedStock);
                 });
                 productRepository.saveAll(products);
-                lock.unlock();
-            } else
-                throw new ApplicationException("Lock failed");
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } finally {
+            for(int i = locks.size() - 1; i >= 0; i--){
+                RLock lock = locks.get(i);
+                if(lock.isHeldByCurrentThread()){
+                    lock.unlock();
+                }
+            }
         }
 
         return BaseResponse.success(null, "Lock stock successfully");
