@@ -20,7 +20,12 @@ spring:
               uri: lb://order-service
               predicates:
                 - Path=/v1/orders/**
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/spring-2026
+          jwk-set-uri: http://localhost:8180/realms/spring-2026/protocol/openid-connect/certs
 server:
   port: 8282
 
