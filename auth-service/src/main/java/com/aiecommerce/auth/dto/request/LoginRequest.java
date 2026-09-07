@@ -10,15 +10,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegistrationDto {
-    Boolean enabled;
+public class LoginRequest {
     @NotBlank
     String username;
     @NotBlank
     String password;
-    @NotBlank
-    String email;
-    @NotBlank
-    String firstName;
-    String lastName;
 }

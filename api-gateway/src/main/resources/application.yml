@@ -20,6 +20,10 @@ spring:
               uri: lb://order-service
               predicates:
                 - Path=/v1/orders/**
+            - id: auth-service-route
+              uri: lb://auth-service
+              predicates:
+                - Path=/v1/auth/**
   security:
     oauth2:
       resourceserver:
@@ -37,3 +41,4 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8762/eureka
+    enabled: true
