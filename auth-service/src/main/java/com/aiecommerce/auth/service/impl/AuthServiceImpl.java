@@ -66,7 +66,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse login(LoginRequest loginRequest) {
         try {
-            Keycloak userKeycloak1 = KeycloakBuilder.builder().serverUrl(serverUrl).realm(realm).clientId(clientId).username(loginRequest.getUsername()).password(loginRequest.getPassword()).build();
+            Keycloak userKeycloak1 = KeycloakBuilder.builder()
+                    .serverUrl(serverUrl)
+                    .realm(realm)
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .username(loginRequest.getUsername())
+                    .password(loginRequest.getPassword())
+                    .build();
             AccessTokenResponse accessTokenResponse = userKeycloak1.tokenManager().getAccessToken();
             TokenResponse tokenResponse = new TokenResponse();
             tokenResponse.setAccessToken(accessTokenResponse.getToken());

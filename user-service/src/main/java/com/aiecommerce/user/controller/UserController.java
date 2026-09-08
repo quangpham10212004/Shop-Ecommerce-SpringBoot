@@ -46,18 +46,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
+    public User getById(@PathVariable String id) {
         return userService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public User update(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+    public User update(@PathVariable String id, @Valid @RequestBody UserRequest request) {
         return userService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable String id) {
         userService.delete(id);
     }
 }

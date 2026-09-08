@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange( exchanges -> exchanges
                         .pathMatchers("/v1/auth/**").permitAll()
+                        .pathMatchers("/v1/users/**").hasAuthority("ROLE_USER")
                         .pathMatchers("/v1/products/**").hasAuthority("ROLE_USER")
                         .pathMatchers("/v1/orders/**").hasAnyAuthority("ROLE_USER")
                         .anyExchange().authenticated()
